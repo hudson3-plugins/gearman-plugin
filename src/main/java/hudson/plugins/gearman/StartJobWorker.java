@@ -28,8 +28,8 @@ import hudson.model.Cause;
 import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Queue;
-import hudson.model.TextParameterValue;
-import hudson.model.queue.QueueTaskFuture;
+//import hudson.model.TextParameterValue;
+//import hudson.model.queue.QueueTaskFuture;
 import hudson.slaves.OfflineCause;
 
 import java.util.ArrayList;
@@ -50,6 +50,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import hudson.model.TaskListener;
+import hudson.model.User;
+import java.util.Arrays;
+import java.util.concurrent.Future;
+import org.kohsuke.stapler.export.Exported;
 
 /**
  * This is a gearman function that will start jenkins builds
@@ -173,7 +178,7 @@ public class StartJobWorker extends AbstractGearmanFunction {
                     project.getName()+" build #" +
                     project.getNextBuildNumber()+" on " + runNodeName
                     + " with UUID " + decodedUniqueId + " and build params " + buildParams);
-        QueueTaskFuture<?> future = project.scheduleBuild2(0, new Cause.UserIdCause(), actions);
+        Future<?> future = project.scheduleBuild2(0, new UserIdCause(), actions);
 
         // check build and pass results back to client
         String jobData;
@@ -193,7 +198,8 @@ public class StartJobWorker extends AbstractGearmanFunction {
             }
 
             // wait for start of build
-            Queue.Executable exec = future.getStartCondition().get();
+            //Queue.Executable exec = future.getStartCondition().get();
+            Queue.Executable exec = (Queue.Executable) future.get();
             AbstractBuild<?, ?> currBuild = (AbstractBuild<?, ?>) exec;
 
             if (!offlineWhenComplete) {
@@ -202,7 +208,7 @@ public class StartJobWorker extends AbstractGearmanFunction {
             }
 
             long now = new Date().getTime();
-            int duration = (int) (now - currBuild.getStartTimeInMillis());
+            int duration = (int) (now - currBuild.getTimeInMillis()) ;//.getStartTimeInMillis());
             int estimatedDuration = (int) currBuild.getEstimatedDuration();
             jobData = buildStatusData(currBuild);
 
@@ -211,7 +217,7 @@ public class StartJobWorker extends AbstractGearmanFunction {
             sendStatus(estimatedDuration, duration);
             sess.driveSessionIO();
 
-            exec = future.get();
+            exec = (Queue.Executable) future.get();
             jobData = buildStatusData(currBuild);
 
         } finally {
@@ -234,5 +240,41 @@ public class StartJobWorker extends AbstractGearmanFunction {
                 jobData.getBytes(), "".getBytes(),
                 "".getBytes(), 0, 0);
         return gjr;
+    }
+    
+    public static class UserIdCause extends Cause {
+
+        private String userId;
+
+        public UserIdCause() {
+            User user = User.current();
+            this.userId = (user == null) ? null : user.getId();
+        }
+
+        @Exported(visibility = 3)
+        public String getUserId() {
+            return userId;
+        }
+
+        @Exported(visibility = 3)
+        public String getUserName() {
+            return userId == null ? "anonymous" : User.get(userId).getDisplayName();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof UserIdCause && Arrays.equals(new Object[]{userId},
+                    new Object[]{((UserIdCause) o).userId});
+        }
+
+        @Override
+        public int hashCode() {
+            return 295 + (this.userId != null ? this.userId.hashCode() : 0);
+        }
+
+        @Override
+        public String getShortDescription() {
+            return "Started by User - " + userId;
+        }
     }
 }

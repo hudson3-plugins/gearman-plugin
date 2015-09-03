@@ -57,20 +57,20 @@ public class ItemListenerImpl extends ItemListener {
         registerJobs();
     }
 
-    @Override
-    public void onUpdated(Item item) {
-        registerJobs();
-    }
+//    @Override
+//    public void onUpdated(Item item) {
+//        registerJobs();
+//    }
 
     @Override
     public void onDeleted(Item item) {
         registerJobs();
     }
 
-    @Override
-    public void onLocationChanged(Item item, String oldFullName, String newFullName)  {
-        registerJobs();
-    }
+//    @Override
+//    public void onLocationChanged(Item item, String oldFullName, String newFullName)  {
+//        registerJobs();
+//    }
 
     // register gearman functions
     private void registerJobs() {

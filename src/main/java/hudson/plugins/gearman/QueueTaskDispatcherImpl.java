@@ -24,7 +24,6 @@ import hudson.model.Queue;
 import hudson.model.queue.QueueTaskDispatcher;
 import hudson.model.queue.CauseOfBlockage;
 
-import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,5 +45,10 @@ public class QueueTaskDispatcherImpl extends QueueTaskDispatcher {
         }
 
         return GearmanProxy.getInstance().canTake(node, item);
+    }
+
+    @Override
+    public CauseOfBlockage canTake(Node node, Queue.Task task) {
+        return null;
     }
 }

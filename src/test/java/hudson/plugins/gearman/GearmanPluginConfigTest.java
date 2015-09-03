@@ -21,7 +21,7 @@ package hudson.plugins.gearman;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import jenkins.model.Jenkins;
+import hudson.model.Hudson;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +37,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Khai Do
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(Jenkins.class)
+@PrepareForTest(Hudson.class)
 public class GearmanPluginConfigTest {
 
     private GearmanPluginConfig gpc;
@@ -46,11 +46,11 @@ public class GearmanPluginConfigTest {
    */
     @Before
     public void setUp() {
-        Jenkins jenkins = mock(Jenkins.class);
-        PowerMockito.mockStatic(Jenkins.class);
-        when(Jenkins.getInstance()).thenReturn(jenkins);
+        Hudson jenkins = mock(Hudson.class);
+        PowerMockito.mockStatic(Hudson.class);
+        when(Hudson.getInstance()).thenReturn(jenkins);
 
-        gpc = new GearmanPluginConfig();
+        gpc = GearmanPluginConfig.get();
     }
 
     @After

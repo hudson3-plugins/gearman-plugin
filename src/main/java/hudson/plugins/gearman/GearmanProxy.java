@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import jenkins.model.Jenkins;
+import hudson.model.Hudson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class GearmanProxy {
         String hostname = Constants.GEARMAN_DEFAULT_EXECUTOR_NAME;
         // query Jenkins for master's name
         try {
-            master = Jenkins.getInstance().getComputer("");
+            master = Hudson.getInstance().getComputer("");
             hostname = master.getHostName();
         } catch (Exception e) {
             logger.warn("Exception while getting hostname", e);
@@ -136,7 +136,7 @@ public class GearmanProxy {
         /*
          * Spawn executors for the jenkins slaves
          */
-        List<Node> nodes = Jenkins.getInstance().getNodes();
+        List<Node> nodes = Hudson.getInstance().getNodes();
         if (!nodes.isEmpty()) {
             for (Node node : nodes) {
                 Computer computer = node.toComputer();

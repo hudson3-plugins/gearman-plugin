@@ -28,10 +28,9 @@ import hudson.model.Node.Mode;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 
-import jenkins.model.Jenkins;
+import hudson.model.Hudson;
 
 import org.gearman.worker.GearmanFunctionFactory;
 import org.slf4j.Logger;
@@ -117,7 +116,7 @@ public class ExecutorWorkerThread extends AbstractWorkerThread{
         if (!computer.isOffline()) {
             Node node = computer.getNode();
 
-            List<AbstractProject> allProjects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+            List<AbstractProject> allProjects = Hudson.getInstance().getAllItems(AbstractProject.class);
             for (AbstractProject<?, ?> project : allProjects) {
 
                 if (project.isDisabled()) { // ignore all disabled projects
@@ -139,10 +138,10 @@ public class ExecutorWorkerThread extends AbstractWorkerThread{
                          // node matches a node from the project label
 
                     Set<Node> projectLabelNodes = label.getNodes();
-                    Set<LabelAtom> projectLabelAtoms = label.listAtoms();
+                    //Set<LabelAtom> projectLabelAtoms = label.listAtoms();
                     Set<LabelAtom> nodeLabelAtoms = node.getAssignedLabels();
                     // Get the intersection of label atoms for the project and the current node
-                    Set<LabelAtom> nodeProjectLabelAtoms = new HashSet<LabelAtom>(projectLabelAtoms);
+                    Set<LabelAtom> nodeProjectLabelAtoms = new HashSet<LabelAtom>();
                     nodeProjectLabelAtoms.retainAll(nodeLabelAtoms);
 
                     // Register functions iff the current node is in

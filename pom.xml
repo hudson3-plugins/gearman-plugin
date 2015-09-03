@@ -26,18 +26,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>plugin</artifactId>
-        <version>1.565.3</version><!-- which version of Jenkins is this plugin built against? -->
+        <groupId>org.eclipse.hudson.plugins</groupId>
+        <artifactId>hudson-plugin-parent</artifactId>
+        <version>3.3.0</version>
     </parent>
 
+    <groupId>org.hudsonci.plugins</groupId>
     <artifactId>gearman-plugin</artifactId>
     <packaging>hpi</packaging>
-    <version>${project-version}</version>
+    <version>0.1.2-h-1</version>
 
     <name>Gearman Plugin</name>
     <description>Integrates Gearman application framework with Jenkins</description>
-    <url>http://wiki.jenkins-ci.org/display/JENKINS/Gearman+Plugin</url>
+    <url>http://wiki.hudson-ci.org/display/HUDSON/Gearman+Plugin</url>
 
     <licenses>
         <license>
@@ -56,9 +57,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:ssh://github.com/openstack-infra/gearman-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/openstack-infra/gearman-plugin.git</developerConnection>
-        <url>https://github.com/openstack-infra/gearman-plugin</url>
+        <connection>scm:git:ssh://github.com/hudson3plugins/gearman-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/hudson3plugins/gearman-plugin.git</developerConnection>
+        <url>https://github.com/hudson3plugins/gearman-plugin</url>
     </scm>
 
     <repositories>
@@ -78,17 +79,6 @@
             <url>http://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
-
-    <distributionManagement>
-        <repository>
-            <id>maven.jenkins-ci.org</id>
-            <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
-        </repository>
-        <site>
-            <id>github-project-site</id>
-            <url>gitsite:git@github.com/openstack-infra/gearman-plugin</url>
-        </site>
-    </distributionManagement>
 
     <properties>
         <!-- http://docs.codehaus.org/display/MAVENUSER/POM+Element+for+Source+File+Encoding -->

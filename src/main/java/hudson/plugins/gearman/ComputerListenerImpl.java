@@ -99,32 +99,32 @@ public class ComputerListenerImpl extends ComputerListener {
         gp.createExecutorWorkersOnNode(c);
     }
 
-    @Override
-    public void onTemporarilyOffline(Computer c, OfflineCause cause) {
-        // fired when master or slave goes into temporary offline state
-        logger.info("---- " + ComputerListenerImpl.class.getName() + ":"
-                + " onTemporarilyOffline computer " + c);
-        // update functions only when gearman-plugin is enabled
-        if (!GearmanPluginConfig.get().enablePlugin()) {
-            return;
-        }
-
-        // re-register gearman functions on node status change,
-        GearmanProxy.getInstance().registerJobs();
-    }
-
-    @Override
-    public void onTemporarilyOnline(Computer c) {
-        // fired when master or slave goes into temporary online state
-        logger.info("---- " + ComputerListenerImpl.class.getName() + ":"
-                + " onTemporarilyOnline computer " + c);
-        // update functions only when gearman-plugin is enabled
-        if (!GearmanPluginConfig.get().enablePlugin()) {
-            return;
-        }
-
-        // re-register gearman functions on node status change,
-        GearmanProxy.getInstance().registerJobs();
-    }
+//    @Override
+//    public void onTemporarilyOffline(Computer c, OfflineCause cause) {
+//        // fired when master or slave goes into temporary offline state
+//        logger.info("---- " + ComputerListenerImpl.class.getName() + ":"
+//                + " onTemporarilyOffline computer " + c);
+//        // update functions only when gearman-plugin is enabled
+//        if (!GearmanPluginConfig.get().enablePlugin()) {
+//            return;
+//        }
+//
+//        // re-register gearman functions on node status change,
+//        GearmanProxy.getInstance().registerJobs();
+//    }
+//
+//    @Override
+//    public void onTemporarilyOnline(Computer c) {
+//        // fired when master or slave goes into temporary online state
+//        logger.info("---- " + ComputerListenerImpl.class.getName() + ":"
+//                + " onTemporarilyOnline computer " + c);
+//        // update functions only when gearman-plugin is enabled
+//        if (!GearmanPluginConfig.get().enablePlugin()) {
+//            return;
+//        }
+//
+//        // re-register gearman functions on node status change,
+//        GearmanProxy.getInstance().registerJobs();
+//    }
 
 }

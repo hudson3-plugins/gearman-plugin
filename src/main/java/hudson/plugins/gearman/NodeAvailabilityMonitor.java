@@ -17,7 +17,7 @@
  */
 package hudson.plugins.gearman;
 
-import jenkins.model.Jenkins;
+import hudson.model.Hudson;
 import hudson.model.Queue;
 import hudson.model.Computer;
 
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class NodeAvailabilityMonitor implements AvailabilityMonitor {
     private final Queue queue;
-    private final Jenkins jenkins;
+    private final Hudson hudson;
     private final Computer computer;
     private MyGearmanWorkerImpl workerHoldingLock = null;
     private String expectedUUID = null;
@@ -38,7 +38,7 @@ public class NodeAvailabilityMonitor implements AvailabilityMonitor {
     {
         this.computer = computer;
         queue = Queue.getInstance();
-        jenkins = Jenkins.getInstance();
+        hudson = Hudson.getInstance();
     }
 
     public Computer getComputer() {
@@ -61,7 +61,7 @@ public class NodeAvailabilityMonitor implements AvailabilityMonitor {
                         // If there are no idle executors, we can not
                         // schedule a build.
                         busy = true;
-                    } else if (jenkins.isQuietingDown()) {
+                    } else if (hudson.isQuietingDown()) {
                         busy = true;
                     } else {
                         logger.debug("AvailabilityMonitor got lock: " + worker);

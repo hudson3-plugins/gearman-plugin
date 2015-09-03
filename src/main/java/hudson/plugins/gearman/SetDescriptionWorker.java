@@ -15,8 +15,6 @@
  * limitations under the License.
  *
  */
-
-
 package hudson.plugins.gearman;
 
 import hudson.model.Run;
@@ -26,8 +24,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.context.SecurityContext;
 import org.gearman.client.GearmanJobResult;
 import org.gearman.client.GearmanJobResultImpl;
 import org.gearman.worker.AbstractGearmanFunction;
@@ -36,10 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * This is a gearman function to set a jenkins build
- * description
+ * This is a gearman function to set a jenkins build description
  *
  *
  * @author Khai Do
@@ -82,24 +80,25 @@ public class SetDescriptionWorker extends AbstractGearmanFunction {
         String buildNumber = data.get("number");
         if (!jobName.isEmpty() && !buildNumber.isEmpty()) {
             // find build then update its description
-            Run<?,?> build = GearmanPluginUtil.findBuild(jobName, Integer.parseInt(buildNumber));
+            Run<?, ?> build = GearmanPluginUtil.findBuild(jobName, Integer.parseInt(buildNumber));
             if (build != null) {
-                SecurityContext oldContext = ACL.impersonate(ACL.SYSTEM);
+                //SecurityContext oldContext = ACL.impersonate(ACL.SYSTEM);
+                SecurityContext oldContext = impersonate(ACL.SYSTEM);
                 try {
                     try {
                         build.setDescription(buildDescription);
                     } catch (IOException e) {
-                        throw new IllegalArgumentException("Unable to set description for " +
-                                                           jobName + ": " + buildNumber);
+                        throw new IllegalArgumentException("Unable to set description for "
+                                + jobName + ": " + buildNumber);
                     }
                 } finally {
                     SecurityContextHolder.setContext(oldContext);
                 }
-                jobResultMsg = "Description for Jenkins build " +buildNumber+" was updated to " + buildDescription;
+                jobResultMsg = "Description for Jenkins build " + buildNumber + " was updated to " + buildDescription;
                 jobResult = true;
             } else {
-                throw new IllegalArgumentException("Cannot find build number " +
-                                                   buildNumber);
+                throw new IllegalArgumentException("Cannot find build number "
+                        + buildNumber);
             }
         } else {
             throw new IllegalArgumentException("Build id is invalid or not specified");
@@ -108,5 +107,74 @@ public class SetDescriptionWorker extends AbstractGearmanFunction {
         GearmanJobResult gjr = new GearmanJobResultImpl(this.jobHandle, jobResult,
                 jobResultMsg.getBytes(), null, null, 0, 0);
         return gjr;
+    }
+
+    private SecurityContext impersonate(Authentication auth) {
+        SecurityContext old = SecurityContextHolder.getContext();
+        SecurityContextHolder.setContext(new NonSerializableSecurityContext(auth));
+        return old;
+    }
+
+    public static class NonSerializableSecurityContext implements SecurityContext {
+
+        private transient Authentication authentication;
+
+        public NonSerializableSecurityContext() {
+        }
+
+        public NonSerializableSecurityContext(Authentication authentication) {
+            this.authentication = authentication;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof SecurityContext) {
+                SecurityContext test = (SecurityContext) obj;
+
+                if ((this.getAuthentication() == null) && (test.getAuthentication() == null)) {
+                    return true;
+                }
+
+                if ((this.getAuthentication() != null) && (test.getAuthentication() != null)
+                        && this.getAuthentication().equals(test.getAuthentication())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        @Override
+        public Authentication getAuthentication() {
+            return authentication;
+        }
+
+        @Override
+        public int hashCode() {
+            if (this.authentication == null) {
+                return -1;
+            } else {
+                return this.authentication.hashCode();
+            }
+        }
+
+        @Override
+        public void setAuthentication(Authentication authentication) {
+            this.authentication = authentication;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(super.toString());
+
+            if (this.authentication == null) {
+                sb.append(": Null authentication");
+            } else {
+                sb.append(": Authentication: ").append(this.authentication);
+            }
+
+            return sb.toString();
+        }
     }
 }

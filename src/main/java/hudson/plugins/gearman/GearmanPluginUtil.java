@@ -22,7 +22,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Computer;
 import hudson.model.Run;
 
-import jenkins.model.Jenkins;
+import hudson.model.Hudson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class GearmanPluginUtil {
      */
     public static Run<?,?> findBuild(String jobName, int buildNumber) {
 
-        AbstractProject<?,?> project = Jenkins.getInstance().getItemByFullName(jobName, AbstractProject.class);
+        AbstractProject<?,?> project = Hudson.getInstance().getItemByFullName(jobName, AbstractProject.class);
         if (project != null){
             Run<?,?> run = project.getBuildByNumber(buildNumber);
             if (run != null) {
