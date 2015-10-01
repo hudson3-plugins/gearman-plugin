@@ -36,8 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
+import hudson.model.AbstractProject;
 import hudson.model.Describable;
 import hudson.model.Hudson;
+import hudson.scm.SCM;
+import java.io.Serializable;
 
 /**
  * This class is used to set the global configuration for the gearman-plugin It
@@ -45,9 +48,9 @@ import hudson.model.Hudson;
  *
  * @author Khai Do
  */
-public class GearmanPluginConfig implements Describable {
+public class GearmanPluginConfig implements Describable<GearmanPluginConfig>, Serializable {
 
-    private static GearmanPluginConfig instance = new GearmanPluginConfig();
+    private static final GearmanPluginConfig instance = new GearmanPluginConfig();
 
     private GearmanPluginConfig() {
 
@@ -75,7 +78,7 @@ public class GearmanPluginConfig implements Describable {
     }
 
     @Extension
-    public static class GearmanPluginConfigDescriptor extends Descriptor {
+    public static class GearmanPluginConfigDescriptor<T extends GearmanPluginConfig> extends Descriptor<GearmanPluginConfig> {
 
         private static final Logger logger = LoggerFactory
                 .getLogger(Constants.PLUGIN_LOGGER_NAME);
